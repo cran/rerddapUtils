@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Using rerddapUtils</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Using rerddapUtils</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#extract-during-a-season---griddap_season" id="toc-extract-during-a-season---griddap_season">Extract during a
+season - <code>griddap_season()</code></a></li>
+<li><a href="#split-an-extract-into-parts---griddap_split" id="toc-split-an-extract-into-parts---griddap_split">Split an extract
+into parts - <code>griddap_split()</code></a></li>
+<li><a href="#working-with-projected-datasets---latlon_to_xy-and-xy_to_latlon" id="toc-working-with-projected-datasets---latlon_to_xy-and-xy_to_latlon">Working
+with projected datasets - <code>latlon_to_xy()</code> and
+<code>xy_to_latlon()</code></a></li>
+</ul>
+</div>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;arrow&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:utils&#39;:</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;     timestamp</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; Loading required package: DBI</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; ✔ Overwriting dplyr methods with duckplyr methods.</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; ℹ Turn off with `duckplyr::methods_restore()`.</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;duckplyr&#39;</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:duckdb&#39;:</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt;     read_csv_duckdb</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;lubridate&#39;</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:arrow&#39;:</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co">#&gt;     duration</span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co">#&gt;     date, intersect, setdiff, union</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="fu">library</span>(ncdf4)</span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="fu">library</span>(rerddap)</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="fu">library</span>(rerddapUtils)</span></code></pre></div>
+<p>The <span style="color:red">R</span> package
+<code>rerddapUtils</code> is a set of four main functions designed to
+work extend the <code>rerddap</code> package to provide capabilities
+requested by users, and that meet specialized needs which are better
+dealt with in a separate package, and also provides two helper functions
+that estimate the size of a proposed <code>rerddap::griddap()</code>
+request.</p>
+<p>The first function <code>griddap_season()</code>:</p>
+<ul>
+<li><code>griddap_season &lt;- function(datasetx, ..., fields = &#39;all&#39;, stride = 1, season = NULL, fmt = &quot;nc&quot;, url = eurl(), store = disk(), read = TRUE, callopts = list())</code></li>
+</ul>
+<p>extracts data only for the period during the year defined by
+‘season’.</p>
+<p>The second function <code>griddap_split()</code>:</p>
+<ul>
+<li><code>griddap_split &lt;- function(datasetx, ..., fields = &#39;all&#39;, stride = 1, request_split = NULL, fmt = &quot;nc&quot;, url = eurl(), store = disk(), read = TRUE, callopts = list(), aggregate_file = NULL)</code></li>
+</ul>
+<p>splits a very large request into pieces defined by ‘request_split’,
+and then aggregates the parts either in memory, in a duckdb database, or
+in a netcdf4 file. This allows for requests larger than 2GB to be made
+in an appropriate manner.</p>
+<p>Note that <code>griddap_season()</code> and
+<code>griddap_split()</code> are designed to mostly have the same
+interface as <code>rerddao::griddap()</code>, except for one or two
+additional function arguments. Also some arguments are interpreted
+differently, such as in both functions the argument ‘store = disk()’ is
+ignored. In <code>griddap_season()</code> the ‘fmt’ argument is ignored
+while ‘season’ defines the days during the year to make the extract.</p>
+<p>In <code>griddap_split()</code> the argument ‘fmt’ defines whether
+the aggregate download should be stored in memory as a dataframe, in a
+duckdb database file, or in a netcdf4 file. For the duckdb and nectdf4
+options, ‘aggregate_file’ lets you define where to write the file. If
+‘aggregate_file’ is not defined a temporary file is created following
+proper <span style="color:red">R</span> guidelines, and in both cases
+the path to the file is returned.</p>
+<p>The other two functions are designed to make it easier to work with
+projected datasets:</p>
+<ul>
+<li><code>latlon_to_xy &lt;- function (dataInfo, latitude, longitude, yName = &#39;latitude&#39;, xName = &#39;longitude&#39;, crs = NULL)</code></li>
+</ul>
+<p>which for a given dataset will convert a latitude and longitude
+request into the projected coordinates to be used in
+<code>rerddao::griddap()</code>, while the fourth function:</p>
+<ul>
+<li><code>xy_to_latlon &lt;- function (resp, yName = &#39;cols&#39;, xName = &#39;rows&#39;, crs = NULL)</code></li>
+</ul>
+<p>does the reverse, given an <code>rerddao::griddap()</code> extract
+with projected coordinates, the coordinates are translated into latitude
+and longitude values.</p>
+<p>The two helper functions work with <code>rerddap::griddap()</code>
+and <code>griddap_split()</code>:</p>
+<ul>
+<li><code>estimate_griddap_size &lt;- function(info, ..., fields  = &quot;all&quot;,cstride  = 1L, spacing = list(), verbose = TRUE)</code></li>
+</ul>
+<p>and</p>
+<ul>
+<li><code>estimate_griddap_split_size &lt;- function(size_est, splits, verbose = TRUE)</code></li>
+</ul>
+<p><code>estimate_griddap_size()</code> provides a rough estimate of the
+size of a download from an <code>rerddap::griddap()</code> request, and
+<code>estimate_griddap_split_size()</code> takes the output from
+’<code>estimate_griddap_size()</code> and estimates the size of the
+download for each request for a given split.</p>
+<p>This vignette assumes familiarity with the various ‘rerddap’
+functions and how to use them. More information about the various
+‘rerddap’ functions can be found in the documentation for that
+package.</p>
+<div id="extract-during-a-season---griddap_season" class="section level2">
+<h2>Extract during a season - <code>griddap_season()</code></h2>
+<p>The function <code>griddap_season()</code> works exactly like the
+function <code>rerddap::griddap</code> except that there is one extra
+argument, “season”, which restricts the extract to the part of the year
+defined by “season”. <code>griddap_season()</code> also ignores several
+of the <code>rerddap::griddap</code> options, such as it ignores the
+“fmt” option, and only saves to a standard <code>rerddap::griddap</code>
+output structure.</p>
+<p>The argument “season” is a character string such that for a given
+“year”, <code>paste0(year, &#39;-&#39;, season)</code> produces a valid ISO
+datetime string. To test that “season” is properly formed, use
+<code>lubridate::as_datetime()</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>year <span class="ot">&lt;-</span> <span class="st">&#39;2023&#39;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>season <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;02-01&#39;</span>, <span class="st">&#39;06-01&#39;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># test that &quot;season&quot; is defined properly</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>test_time <span class="ot">&lt;-</span> <span class="fu">paste0</span>(year, <span class="st">&#39;-&#39;</span>, season)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>lubridate<span class="sc">::</span><span class="fu">as_datetime</span>(test_time)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2023-02-01 UTC&quot; &quot;2023-06-01 UTC&quot;</span></span></code></pre></div>
+<p>The example only includes month and day, but hours etc can be
+included as long as the final result, when a year is appended, produces
+a valid datetime.</p>
+<p>As an example of using <code>griddap_season()</code> and how the
+function compares to using <code>rerddap::griddap()</code>, suppose for
+an <code>rerddap::griddap()</code> extract given by:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>extract <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">griddap</span>(wind_info,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                            <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2019-01-01&#39;</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                            <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                            <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                            <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>it is desired to restrict the extract to March 1 to May 1 inclusive
+in each year. Then the following modification of the above using
+<code>griddap_season()</code>produces the desired result:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>wcnURL <span class="ot">&lt;-</span> <span class="st">&quot;https://coastwatch.pfeg.noaa.gov/erddap/&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>, <span class="at">url =</span> wcnURL)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>season <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;03-01&#39;</span>, <span class="st">&#39;05-01&#39;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>season_extract <span class="ot">&lt;-</span> <span class="fu">griddap_season</span>(wind_info,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a> <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2019-01-01&#39;</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a> <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a> <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a> <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a> <span class="at">season =</span> season</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>)</span></code></pre></div>
+<p>To check that the extract has been limited to the given season:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>extract_times  <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">as_datetime</span>(season_extract<span class="sc">$</span>data<span class="sc">$</span>time)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>extract_months <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">month</span>(extract_times)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">unique</span>(extract_months)</span></code></pre></div>
+<p>Only results for months 3, 4, and 5 are included, as per the values
+of “season”. May is included because the definition of “season” is
+inclusive, hence May 1 will be included.</p>
+</div>
+<div id="split-an-extract-into-parts---griddap_split" class="section level2">
+<h2>Split an extract into parts - <code>griddap_split()</code></h2>
+<p>The function <code>griddap_split()</code> allows for
+<code>rerddap::griddap()</code> requests that are larger than the 2GB
+limit by splitting the request into parts and then combining the results
+either in memory, in a dataframe, in a netcdf4 file, or into a duckdb
+database file. If the “in memory” option is chosen, there is no check
+that there is adequate memory, so it is possible to crash both R and
+your computer. The nectdf4 and duckdb options depend more on having
+adequate disk space, not memory. To check if the proposed split is small
+enough, see <code>estimate_griddap_split_size()</code> below.</p>
+<p><code>griddap_split()</code> uses the same arguments as
+<code>rerddap::griddap()</code> except that:</p>
+<ul>
+<li>The “store” and “read” arguments are ignored.</li>
+<li>“fmt” is one of “memory”, “nc”, or “duckdb” - default “nc”</li>
+<li>an added argument “split”</li>
+<li>an added argument “aggregate_file” - default is to create an <span style="color:red">R</span> temporary file</li>
+</ul>
+<p>The argument “split” is a named list that defines the number of
+splits in each dimension, not the values where to make the splits, and a
+value must be given for each coordinate in the dataset. For the dataset
+‘erdQMekm14day’ above, there are four coordinates, “time”, “altitude”,
+“latitude” and “longitude”, so to break the request into five “time”
+parts and two “latitude” and “longitude” parts (if you remember your
+combinatorics the original request will be broken into 20 separate
+requests) use:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>request_split <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">time =</span> <span class="dv">5</span>, <span class="at">altitude =</span> <span class="dv">1</span>, <span class="at">latitude =</span> <span class="dv">2</span>, <span class="at">longitude =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p>Note that:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>request_split <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">time =</span> <span class="dv">5</span>, <span class="at">latitude =</span> <span class="dv">2</span>, <span class="at">longitude =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p>will fail, even though “altitude” is dimension one. A value must be
+given for all of the coordinates in the dataset.</p>
+<p>“fmt” defines how the split extracts are combined to give one result.
+If fmt = “memory” then the results are combined into a usual
+<code>rerddap::griddap()</code> dataframe in memory, and that structure
+is returned by the function. If fmt = “nc” then the extracts are
+combined into a netcdf4 file, and a path to the netcdf4 file is returned
+by the function. If fmt = “duckdb” then the extracts are combined into a
+duckdb database file, and a path to the duckdb file is returned by the
+function.</p>
+<p>As in the previous example, given a proposed
+<code>rerddap::griddap()</code> extract:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>extract <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">griddap</span>(wind_info,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                            <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2016-01-01&#39;</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                            <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                            <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                            <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>then the function <code>estimate_griddap_size()</code> provides a
+rough estimate of the size of the file to be downloaded, (usually a bit
+on the low side, but good enough to see if the download size approaches
+2GB):</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>sz <span class="ot">&lt;-</span> <span class="fu">estimate_griddap_size</span>(wind_info,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>                            <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2016-01-01&#39;</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>                            <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                            <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                            <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>)</span></code></pre></div>
+<p>In the example the information is printed out and stored in the
+variable “sz”, when not set to a variable the information is just
+printed out. In this case the download size would be about 13.5 MB.</p>
+<p>To obtain an estimate of the download size of each file in a proposed
+split:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">estimate_griddap_split_size</span>(sz,</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a> <span class="at">splits =</span> request_split</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a> )</span></code></pre></div>
+<p>and each split will be about 714KB in size.</p>
+<p>Given that the requested splits are small enough, to make the request
+for the split “request_split” defined above and stored in memory:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>wcnURL <span class="ot">&lt;-</span> <span class="st">&quot;https://coastwatch.pfeg.noaa.gov/erddap/&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>, <span class="at">url =</span> wcnURL)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>request_split <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">time =</span> <span class="dv">5</span>, <span class="at">altitude =</span> <span class="dv">1</span>, <span class="at">latitude =</span> <span class="dv">2</span>, <span class="at">longitude =</span> <span class="dv">2</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>split_extract <span class="ot">&lt;-</span> <span class="fu">griddap_split</span>(wind_info,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a> <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2016-01-01&#39;</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a> <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a> <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a> <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a> <span class="at">request_split =</span> request_split,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a> <span class="at">fmt =</span> <span class="st">&quot;memory&quot;</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>)</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="fu">str</span>(split_extract)</span></code></pre></div>
+<p>On return, “split_extract” contains the usual
+<code>rerddap::griddap()</code> dataframe. Again, there is no check that
+there is enough memory to do this operation, so it is possible to crash
+<span style="color:red">R</span> (or your computer) if not used
+carefully. It is common for computers these days to have 16GB of RAM or
+more, so extracts a good bit larger than 2GB can be stored in
+memory.</p>
+<p>If instead it is desired to store the result in a netcdf4 file:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>wcnURL <span class="ot">&lt;-</span> <span class="st">&quot;https://coastwatch.pfeg.noaa.gov/erddap/&quot;</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>, <span class="at">url =</span> wcnURL)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>request_split <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">time =</span> <span class="dv">5</span>, <span class="at">altitude =</span> <span class="dv">1</span>, <span class="at">latitude =</span> <span class="dv">2</span>, <span class="at">longitude =</span> <span class="dv">2</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>split_extract <span class="ot">&lt;-</span> <span class="fu">griddap_split</span>(wind_info,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a> <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2016-01-01&#39;</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a> <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a> <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a> <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a> <span class="at">request_split =</span> request_split,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a> <span class="at">fmt =</span> <span class="st">&quot;nc&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>The argument “aggregate_file” is not set in the example above, so the
+netcdf4 file is written to a temporary location and the path to that
+file returned by the function. The reason for this is it is bad form for
+an <span style="color:red">R</span> package to write to a user’s space
+without permission (in fact it is prohibited by CRAN). To set the
+location where the netcdf4 file is written, set “aggregate_file” to the
+name of the file, in which case the file is written in the present
+working directory, or else set “aggregate_file” as the full path to the
+file. As an example:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>request_split <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">time =</span> <span class="dv">5</span>, <span class="at">altitude =</span> <span class="dv">1</span>, <span class="at">latitude =</span> <span class="dv">2</span>, <span class="at">longitude =</span> <span class="dv">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>split_extract <span class="ot">&lt;-</span> <span class="fu">griddap_split</span>(wind_info,</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a> <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2016-01-01&#39;</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a> <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a> <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a> <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a> <span class="at">request_split =</span> request_split,</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a> <span class="at">fmt =</span> <span class="st">&quot;nc&quot;</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a> <span class="at">aggregate_file =</span> <span class="st">&#39;wind_extract.nc&#39;</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>)</span></code></pre></div>
+<p>To access the data in the netcdf4 file, any of the various R packages
+that can read netcdf4 files can be used, but it is recommend to only use
+packages that can read in subsets of the file, as the data may well be
+too large for memory. For example, to open the the netcdf4 file created
+above using ‘ncdf4’ and viewing a summary:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>wind_file <span class="ot">&lt;-</span> ncdf4<span class="sc">::</span><span class="fu">nc_open</span>(split_extract )</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>wind_file</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>ncdf4<span class="sc">::</span><span class="fu">nc_close</span>(wind_file)</span></code></pre></div>
+<p>To make the same extract and save to a duckbb database file:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>wind_info <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;erdQMekm14day&#39;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>request_split <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">time =</span> <span class="dv">5</span>, <span class="at">altitude =</span> <span class="dv">1</span>, <span class="at">latitude =</span> <span class="dv">2</span>, <span class="at">longitude =</span> <span class="dv">2</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>split_extract <span class="ot">&lt;-</span> <span class="fu">griddap_split</span>(wind_info,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a> <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2015-01-01&#39;</span>,<span class="st">&#39;2016-01-01&#39;</span>),</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a> <span class="at">latitude =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a> <span class="at">longitude =</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">240</span>),</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a> <span class="at">fields =</span> <span class="st">&#39;mod_current&#39;</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a> <span class="at">request_split =</span> request_split,</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a> <span class="at">fmt =</span> <span class="st">&quot;duckdb&quot;</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a> <span class="at">aggregate_file =</span> <span class="st">&#39;wind_extract.duckdb&#39;</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>)</span></code></pre></div>
+<p>There are several packages that can read “duckdb” database files,
+among them the packages ‘dplyr’ and ‘duckplyr’ (note extracts that write
+to a “duckdb” database file always write to a table named “extract”:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>con_db <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(duckdb<span class="sc">::</span><span class="fu">duckdb</span>(), <span class="st">&quot;wind_extract.duckdb&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">tbl</span>(con_db, <span class="st">&quot;extract&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>     <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>     <span class="fu">collect</span>()</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con_db, <span class="at">shutdown=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The default “duckdb” format is used because it allows for incremental
+additions to the dataset on disk, so datasets can be larger than memory.
+A popular format for storing data is “parquet”, or if it is desired to
+encode geometry information into the data, then the “geoparquet” format.
+To copy the duckdb file to parquet:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>con_db <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(duckdb<span class="sc">::</span><span class="fu">duckdb</span>(), <span class="st">&quot;wind_extract.duckdb&quot;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co"># Use DuckDB&#39;s COPY command to write directly to Parquet file without loading into R</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;COPY extract TO &#39;%s&#39; (FORMAT &#39;parquet&#39;)&quot;</span>, <span class="st">&quot;wind_extract.parquet&quot;</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>DBI<span class="sc">::</span><span class="fu">dbExecute</span>(con_db, query)</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con_db, <span class="at">shutdown=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The resulting parquet files are half the size of the duckdb file, or
+smaller. While these examples are for writing the duckdb database to the
+parquet format, similar steps can be used if the data are in tibbles,
+but it may require reading the entire dataset into memory.</p>
+</div>
+<div id="working-with-projected-datasets---latlon_to_xy-and-xy_to_latlon" class="section level2">
+<h2>Working with projected datasets - <code>latlon_to_xy()</code> and
+<code>xy_to_latlon()</code></h2>
+<p>Extracting projected data in ERDDAP™ (that is not on a
+latitude-longitude grid) can be difficult because most people do not
+think in terms of the projection in defining the region to make an
+extract, and similary once an extract has been made, it is often
+desirable to know the coordinates in terms of latitude and longitude.
+The functions <code>latlon_to_xy()</code> and
+<code>xy_to_latlon()</code> are designed to help with this process.</p>
+<p>In both cases the functions try to determine the dataset projection
+either from the dataset summary given by <code>rerddap::info()</code>
+when projecting the values of a latitude-longitude bounding box, or when
+an extract has been made, from the metadata in the extract. This is done
+by searching for any of the terms:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>   proj_strings <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;proj4text&#39;</span>, <span class="st">&#39;projection&#39;</span>, <span class="st">&#39;proj4string&#39;</span>, <span class="st">&#39;grid_mapping_epsg_code&#39;</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>                    <span class="st">&#39;WKT&#39;</span>,  <span class="st">&#39;proj_crs_code&#39;</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>                    <span class="st">&#39;grid_mapping_epsg_code&#39;</span>, <span class="st">&#39;grid_mapping_proj4&#39;</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>                    <span class="st">&#39;grid_mapping_proj4_params&#39;</span>, <span class="st">&#39;grid_mapping_proj4text&#39;</span>)</span></code></pre></div>
+<p>in the metadata. If this is not found, then the user has to provide
+the “CRS”, which can be in any of the forms above. For example the Ice
+dataset ‘nsidcG02202v4sh1day’ on the Coastwatch Central ERDDAP™ is
+projected. The bounding box of interest is:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="fl">80.</span>, <span class="fl">85.</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">170.</span>, <span class="sc">-</span><span class="dv">165</span>)</span></code></pre></div>
+<p>then the bounding box in projected coordinates is found from:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>myURL <span class="ot">&lt;-</span> <span class="st">&#39;https://coastwatch.noaa.gov/erddap/&#39;</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>myInfo <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;noaacwVIIRSn20icethickNP06Daily&#39;</span>, <span class="at">url =</span> myURL)</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">latlon_to_xy</span>(myInfo,  longitude, latitude)</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>coords</span></code></pre></div>
+<p>Similary, given an extract on a projected coordinate system, the
+values on terms of latitude and longitude can be found by:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>rows <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="sc">-</span><span class="fl">889533.8</span>, <span class="sc">-</span><span class="fl">469356.9</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">622858.3</span>, <span class="fl">270983.4</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>myURL <span class="ot">&lt;-</span> <span class="st">&#39;https://coastwatch.noaa.gov/erddap/&#39;</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>myInfo <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">info</span>(<span class="st">&#39;noaacwVIIRSn20icethickNP06Daily&#39;</span>, <span class="at">url =</span> myURL)</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>proj_extract <span class="ot">&lt;-</span> rerddap<span class="sc">::</span><span class="fu">griddap</span>(myInfo,</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>                                  <span class="at">time =</span> <span class="fu">c</span>(<span class="st">&#39;2023-01-30T00:00:00Z&#39;</span>, <span class="st">&#39;2023-01-30T00:00:00Z&#39;</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>                                  <span class="at">rows =</span> rows,</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>                                  <span class="at">cols =</span> cols,</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>                                  <span class="at">fields =</span> <span class="st">&#39;IceThickness&#39;</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>                                  <span class="at">url =</span> myURL</span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>  )</span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">xy_to_latlon</span>(proj_extract)</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a><span class="fu">head</span>(test)</span></code></pre></div>
+<p>Note that <code>xy_to_latlon()</code> also works with the output from
+the functions <code>rerddapXtracto::rxtracto()</code>,
+<code>rerddapXtracto::rxtracto_3D()</code> and
+`<code>rerddapXtracto::rxtractogon()</code>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

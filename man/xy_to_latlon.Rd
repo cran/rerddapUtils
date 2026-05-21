@@ -35,18 +35,19 @@ detecting the response type and applying the appropriate
 Coordinate Reference System (CRS) transformation.
 }
 \examples{
-rows <- c( -889533.8, -469356.9)
-cols <- c(622858.3, 270983.4)
+rows <- c(300112.5, 250027.5)
+cols <- c(-400282.5, -350197.5)
 # myURL <- 'https://coastwatch.noaa.gov/erddap/'
-# icceInfo <- rerddap::info('noaacwVIIRSn20icethickNP06Daily', url = myURL)
+# iceInfo <- rerddap::info('noaacwVIIRSn20icethickNP06Daily', url devtoo= myURL)
 # proj_extract <- rerddap::griddap(iceInfo,
-#                           time = c('2023-01-01T00:00:00Z', '2023-01-01T00:00:00Z'),
+#                           time = c('2026-05-18T12:28:57Z', '2026-05-18T12:28:57Z'),
 #                            rows = rows,
 #                             cols = cols,
 #                             altitude = c(0., 0.),
 #                             fields = 'IceThickness',
 #                            url = myURL
-#                             )
+#
+data(proj_extract)
 test <- xy_to_latlon(proj_extract)
 
 }

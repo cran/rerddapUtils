@@ -1,7 +1,7 @@
 Package: rerddapUtils
 Title: Miscellaneous Utilities for 'rerddap'
-Version: 1.0.0
-Date: 2026-05-18
+Version: 1.0.1
+Date: 2026-05-20
 Authors@R: person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre"))
 Description: The 'rerddapUtils' package is an 'R' package that is a set of four main
  functions designed to work with and extend the 'rerddap' package. These functions includes one for restricting by season,
@@ -17,8 +17,8 @@ VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0.9000
 LazyData: true
 NeedsCompilation: no
-Packaged: 2026-05-19 15:57:47 UTC; rmendels
+Packaged: 2026-05-20 16:01:52 UTC; rmendels
 Author: Roy Mendelssohn [aut, cre]
 Maintainer: Roy Mendelssohn <roy.mendelssohn@noaa.gov>
 Repository: CRAN
-Date/Publication: 2026-05-19 21:10:02 UTC
+Date/Publication: 2026-05-21 07:20:16 UTC

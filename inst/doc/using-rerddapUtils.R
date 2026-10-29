@@ -54,6 +54,18 @@ request_split <- list(time = 5, altitude = 1, latitude = 2, longitude = 2)
 ## ----request_split_fail, eval = FALSE-----------------------------------------
 # request_split <- list(time = 5, latitude = 2, longitude = 2)
 
+## ----eval = FALSE, echo = TRUE------------------------------------------------
+# df <- arrow::open_dataset("partitioned_parquet_files")
+
+## ----eval = FALSE, echo = TRUE------------------------------------------------
+# df <- arrow::open_dataset("partitioned_parquet_files") |>
+#   dplyr::collect()
+
+## ----eval = FALSE, echo = TRUE------------------------------------------------
+# df <- arrow::open_dataset("partitioned_parquet_files") |>
+#     dplyr::arrange(part_id, row_id) |>
+#     dplyr::collect()
+
 ## ----wind_extract_redux, eval=FALSE-------------------------------------------
 # wind_info <- rerddap::info('erdQMekm14day')
 # extract <- rerddap::griddap(wind_info,

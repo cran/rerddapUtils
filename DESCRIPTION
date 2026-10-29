@@ -1,7 +1,7 @@
 Package: rerddapUtils
 Title: Miscellaneous Utilities for 'rerddap'
-Version: 1.0.2
-Date: 2026-06-05
+Version: 1.0.3
+Date: 2026-10-28
 Authors@R: person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre"))
 Description: The 'rerddapUtils' package is an 'R' package that is a set of four main
  functions designed to work with and extend the 'rerddap' package. These functions includes one for restricting by season,
@@ -14,11 +14,11 @@ Imports: cli, DBI, duckdb, lubridate, ncdf4, rerddap, sf, stats,
         stringr,
 Suggests: arrow, dplyr, duckplyr, httr, knitr, rmarkdown
 VignetteBuilder: knitr
-Config/roxygen2/version: 8.0.0.9000
+Config/roxygen2/version: 8.1.1
 LazyData: true
 NeedsCompilation: no
-Packaged: 2026-06-07 16:59:08 UTC; rmendels
+Packaged: 2026-10-29 18:00:43 UTC; rmendels
 Author: Roy Mendelssohn [aut, cre]
 Maintainer: Roy Mendelssohn <roy.mendelssohn@noaa.gov>
 Repository: CRAN
-Date/Publication: 2026-06-08 06:50:08 UTC
+Date/Publication: 2026-10-29 20:10:02 UTC
